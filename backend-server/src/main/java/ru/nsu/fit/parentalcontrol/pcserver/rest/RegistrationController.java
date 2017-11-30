@@ -1,5 +1,6 @@
 package ru.nsu.fit.parentalcontrol.pcserver.rest;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import java.net.URISyntaxException;
 @RequestMapping(path = "/rest")
 public class RegistrationController {
 
+  private static final Logger LOG = Logger.getRootLogger();
+
   private static final String AUTH_EXISTS = "User with given email already exists";
 
   @Autowired
@@ -32,6 +35,8 @@ public class RegistrationController {
     if (authRepository.findOne(auth.getEmail()) != null)
       throw new RestException(HttpStatus.BAD_REQUEST, AUTH_EXISTS);
     authRepository.save(auth);
+
+    LOG.info(String.format("USER %s REGISTRATION", auth.getEmail()));
 
     securityService.autoLogin(auth.getEmail(), auth.getPassword());
 

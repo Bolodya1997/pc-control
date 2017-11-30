@@ -4,23 +4,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.Map;
+
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-  private class Error {
-    private final String error;
-
-    private Error(String error) {
-      this.error = error;
-    }
-
-    public String getError() {
-      return error;
-    }
-  }
-
   @ExceptionHandler(RestException.class)
-  public ResponseEntity<Error> errorHandler(RestException e) {
-    return new ResponseEntity<>(new Error(e.getMessage()), e.getStatus());
+  public ResponseEntity<?> errorHandler(RestException e) {
+    return new ResponseEntity<>(Map.of("error", e.getMessage()), e.getStatus());
   }
 }

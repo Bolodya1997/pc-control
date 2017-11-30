@@ -1,6 +1,7 @@
 package ru.nsu.fit.parentalcontrol.pcserver.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +26,8 @@ import java.util.Map;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+  private static final Logger LOG = Logger.getRootLogger();
 
   @Resource
   private EntryPoint entryPoint;
@@ -76,23 +79,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private void authFailure(HttpServletRequest req, HttpServletResponse response,
                            AuthenticationException e) throws IOException {
+    LOG.warn("AUTHENTICATION FAILURE");
+
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.addHeader(HttpHeaders.LOCATION, "/rest/recovery");
 
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-    final Map<String, String> json = new HashMap<>();
-    json.put("error", "Invalid email or password");
-
     final OutputStream out = response.getOutputStream();
     final ObjectMapper mapper = new ObjectMapper();
-    mapper.writeValue(out, json);
+    mapper.writeValue(out, Map.of("error", "Invalid email or Password"));
     out.flush();
   }
 
   private void authSuccess(HttpServletRequest req, HttpServletResponse response,
-                           Authentication authentication) {
+                           Authentication auth) {
+    LOG.info(String.format("USER %s LOGIN", auth.getPrincipal()));
+
     response.setStatus(HttpServletResponse.SC_OK);
-    response.addHeader(HttpHeaders.LOCATION, "/rest/user?email=" + authentication.getName());
+    response.addHeader(HttpHeaders.LOCATION, "/rest/user?email=" + auth.getName());
   }
 }
