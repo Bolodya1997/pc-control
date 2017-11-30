@@ -3,9 +3,11 @@ package ru.nsu.fit.parentalcontrol.pcserver.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
@@ -36,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private NoRedirectLogoutFilter noRedirectLogoutFilter;
 
   @Resource
-  private JSONFilter jsonFilter;
+  private JSONAuthenticationFilter jsonAuthenticationFilter;
 
   @Autowired
   private UserDetailsService userDetailsService;
@@ -62,14 +63,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     http.addFilter(noRedirectLogoutFilter);
 
-//    ------   JSONFilter   ------
+//    ------   JSONAuthenticationFilter   ------
 
-    jsonFilter.setRequiresAuthenticationRequestMatcher(
+    jsonAuthenticationFilter.setRequiresAuthenticationRequestMatcher(
         new RegexRequestMatcher("/rest/login", "POST"));
-    jsonFilter.setAuthenticationFailureHandler(this::authFailure);
-    jsonFilter.setAuthenticationSuccessHandler(this::authSuccess);
+    jsonAuthenticationFilter.setAuthenticationFailureHandler(this::authFailure);
+    jsonAuthenticationFilter.setAuthenticationSuccessHandler(this::authSuccess);
 
-    http.addFilter(jsonFilter);
+    http.addFilter(jsonAuthenticationFilter);
   }
 
   @Override
@@ -98,5 +99,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     response.setStatus(HttpServletResponse.SC_OK);
     response.addHeader(HttpHeaders.LOCATION, "/rest/user?email=" + auth.getName());
+  }
+
+//  ------   AuthenticationManager bean   ------
+
+  @Bean
+  @Override
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
   }
 }

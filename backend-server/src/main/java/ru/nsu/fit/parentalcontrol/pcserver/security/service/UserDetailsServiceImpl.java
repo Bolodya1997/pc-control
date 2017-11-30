@@ -26,11 +26,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    final Auth auth = authRepository.findOne(email);
+    final Auth auth = authRepository.findById(email).orElse(null);
+    if (auth == null)
+      throw new UsernameNotFoundException(email);
 
     final Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
     grantedAuthorities.add(new SimpleGrantedAuthority("USER"));
-    if (adminRepository.findOne(auth.getEmail()) != null)
+    if (adminRepository.findById(email).isPresent())
       grantedAuthorities.add(new SimpleGrantedAuthority("ADMIN"));
 
     return new User(auth.getEmail(), auth.getPassword(), grantedAuthorities);

@@ -32,7 +32,7 @@ public class RegistrationController {
 
   @PostMapping(path = "/registration")
   public ResponseEntity<?> registration(@RequestBody Auth auth) throws URISyntaxException {
-    if (authRepository.findOne(auth.getEmail()) != null)
+    if (authRepository.findById(auth.getEmail()).isPresent())
       throw new RestException(HttpStatus.BAD_REQUEST, AUTH_EXISTS);
     authRepository.save(auth);
 

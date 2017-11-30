@@ -1,7 +1,9 @@
 package ru.nsu.fit.parentalcontrol.pcserver.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -15,7 +17,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 @Component
-public class JSONFilter extends UsernamePasswordAuthenticationFilter {
+public class JSONAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+  private static final Logger LOG = Logger.getRootLogger();
 
   private Auth auth;
 
@@ -34,8 +38,8 @@ public class JSONFilter extends UsernamePasswordAuthenticationFilter {
 
       final ObjectMapper mapper = new ObjectMapper();
       auth = mapper.readValue(sb.toString(), Auth.class);
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
+      LOG.warn("", e);
     }
 
     return super.attemptAuthentication(request, response);

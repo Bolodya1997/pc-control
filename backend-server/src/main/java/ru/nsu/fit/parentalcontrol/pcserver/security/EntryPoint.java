@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component("entryPoint")
@@ -26,12 +25,9 @@ public class EntryPoint implements AuthenticationEntryPoint {
 
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-    final Map<String, String> json = new HashMap<>();
-    json.put("error", "Log in");
-
     final OutputStream out = response.getOutputStream();
     final ObjectMapper mapper = new ObjectMapper();
-    mapper.writeValue(out, json);
+    mapper.writeValue(out, Map.of("error", "Log in"));
     out.flush();
   }
 }
