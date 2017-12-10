@@ -19,6 +19,14 @@ public class Auth {
   @NotNull
   private String password;
 
+  public Auth() {
+  }
+
+  public Auth(@NotNull String email, @NotNull String password) {
+    this.email = email;
+    this.password = password;
+  }
+
   @NotNull
   public String getEmail() {
     return email;

@@ -12,6 +12,13 @@ public class Admin {
   @NotNull
   private String email;
 
+  public Admin() {
+  }
+
+  public Admin(@NotNull String email) {
+    this.email = email;
+  }
+
   @NotNull
   public String getEmail() {
     return email;

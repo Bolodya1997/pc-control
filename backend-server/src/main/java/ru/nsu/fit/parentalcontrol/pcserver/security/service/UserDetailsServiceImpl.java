@@ -5,7 +5,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.nsu.fit.parentalcontrol.pcserver.security.model.Auth;
@@ -16,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsServiceWithRoles {
 
   @Autowired
   private AuthRepository authRepository;
@@ -31,9 +30,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
       throw new UsernameNotFoundException(email);
 
     final Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-    grantedAuthorities.add(new SimpleGrantedAuthority("USER"));
+    grantedAuthorities.add(USER);
     if (adminRepository.findById(email).isPresent())
-      grantedAuthorities.add(new SimpleGrantedAuthority("ADMIN"));
+      grantedAuthorities.add(ADMIN);
 
     return new User(auth.getEmail(), auth.getPassword(), grantedAuthorities);
   }

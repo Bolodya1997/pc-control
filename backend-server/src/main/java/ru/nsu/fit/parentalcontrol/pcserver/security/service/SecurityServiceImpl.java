@@ -3,6 +3,7 @@ package ru.nsu.fit.parentalcontrol.pcserver.security.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,7 +20,11 @@ public class SecurityServiceImpl implements SecurityService {
 
   @Override
   public String findLoggedInEmail() {
-    final Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
+    final Authentication token = SecurityContextHolder.getContext().getAuthentication();
+    if (token == null)
+      return null;
+
+    final Object userDetails = token.getDetails();
     if (userDetails instanceof UserDetails)
       return ((UserDetails) userDetails).getUsername();
 
@@ -29,13 +34,13 @@ public class SecurityServiceImpl implements SecurityService {
   @Override
   public void autoLogin(String email, String password) {
     final UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-    final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+    final UsernamePasswordAuthenticationToken token =
         new UsernamePasswordAuthenticationToken(userDetails, password,
             userDetails.getAuthorities());
 
-    authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+    authenticationManager.authenticate(token);
 
-    if (usernamePasswordAuthenticationToken.isAuthenticated())
-      SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+    if (token.isAuthenticated())
+      SecurityContextHolder.getContext().setAuthentication(token);
   }
 }
