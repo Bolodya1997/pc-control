@@ -11,3 +11,4 @@ RUN
   java --add-modules java.xml.bind -jar ./***.jar [--server.port=port]
 
   default port = 8080
+
