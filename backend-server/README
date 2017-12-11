@@ -1,13 +1,13 @@
 BUILD WITH MAVEN
 
 Linux:
-  ./mvnw package
+  ./mvnw clean package
 
 Windows:
-  mvnw.cmd package
+  mvnw.cmd clean package
 
 RUN
 
-  java -jar target/***.jar [--server.port=port]
+  java --add-modules java.xml.bind -jar ./***.jar [--server.port=port]
 
   default port = 8080

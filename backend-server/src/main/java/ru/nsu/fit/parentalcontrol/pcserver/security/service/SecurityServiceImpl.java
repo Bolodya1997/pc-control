@@ -43,4 +43,9 @@ public class SecurityServiceImpl implements SecurityService {
     if (token.isAuthenticated())
       SecurityContextHolder.getContext().setAuthentication(token);
   }
+
+  @Override
+  public void logout() {
+    final Authentication token = SecurityContextHolder.getContext().getAuthentication();
+  }
 }
