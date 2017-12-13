@@ -30,6 +30,7 @@ CREATE TABLE admin (
 	CONSTRAINT fk_admin_user_id
 		FOREIGN KEY (user_id)
 		REFERENCES user(user_id)
+		ON DELETE CASCADE
 );
 
 CREATE TABLE subscription_type (
@@ -50,11 +51,13 @@ CREATE TABLE subscription (
 
 	CONSTRAINT fk_subscription_type_id
 		FOREIGN KEY (type_id)
-		REFERENCES subscription_type(type_id),
+		REFERENCES subscription_type(type_id)
+		ON DELETE RESTRICT,
 
 	CONSTRAINT fk_subscription_user_id
 		FOREIGN KEY (user_id)
 		REFERENCES user(user_id)
+		ON DELETE CASCADE
 );
 
 CREATE TABLE policy (
@@ -68,6 +71,7 @@ CREATE TABLE policy (
 	CONSTRAINT fk_policy_user_id
 		FOREIGN KEY (user_id)
 		REFERENCES user(user_id)
+		ON DELETE CASCADE
 );
 
 CREATE TABLE child (
@@ -78,11 +82,13 @@ CREATE TABLE child (
 
 	CONSTRAINT fk_child_user_id
 		FOREIGN KEY (user_id)
-		REFERENCES user(user_id),
+		REFERENCES user(user_id)
+		ON DELETE CASCADE,
 
 	CONSTRAINT fk_child_policy_id
 		FOREIGN KEY (policy_id)
 		REFERENCES policy(policy_id)
+		ON DELETE RESTRICT
 );
 
 CREATE TABLE log_type (
@@ -100,11 +106,13 @@ CREATE TABLE log (
 
 	CONSTRAINT fk_log_user_id_child_id
 		FOREIGN KEY (user_id, child_id)
-		REFERENCES child(user_id, child_id),
+		REFERENCES child(user_id, child_id)
+		ON DELETE CASCADE,
 
 	CONSTRAINT fk_log_type_id
 		FOREIGN KEY (type_id)
 		REFERENCES log_type(type_id)
+		ON DELETE RESTRICT
 );
 
 ##################################################

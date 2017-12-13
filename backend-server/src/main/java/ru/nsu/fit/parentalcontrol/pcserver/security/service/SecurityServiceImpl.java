@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 @Service
 public class SecurityServiceImpl implements SecurityService {
 
@@ -46,7 +49,11 @@ public class SecurityServiceImpl implements SecurityService {
   }
 
   @Override
-  public void logout() {
-    final Authentication token = SecurityContextHolder.getContext().getAuthentication();
+  public void logout(HttpServletRequest request) {
+    final HttpSession session = request.getSession(false);
+    SecurityContextHolder.clearContext();
+    if (session != null) {
+      session.invalidate();
+    }
   }
 }
