@@ -1,0 +1,111 @@
+1.	REGISTRATION
+
+http --session pc POST :8080/rest/registration email="user@host" password="123456"
+
+EXPECTED:
+	Status:		200
+	Location:	/rest/user
+
+2.	DOUBLE REGISTRATION
+
+http --session pc POST :8080/rest/registration email="user@host" password="123456"
+
+EXPECTED:
+	Code:		404
+	{
+		error : "User with given email already exists"
+	}
+
+3.	LOGOUT
+
+http --session pc POST :8080/rest/logout
+
+EXPECTED:
+	Code:		200
+
+4.	LOGOUT NOT LOGGED IN
+
+http --session pc POST :8080/rest/logout
+
+EXPECTED:
+	Code:		401
+	Location:	/rest/login
+	{
+		error : "Log in"
+	}
+
+5.	LOGIN INCORRECT EMAIL
+
+http --session pc POST :8080/rest/login email="kek@kek" password="kek"
+
+EXPECTED:
+	Code:		401
+	Location:	/rest/recovery
+	{
+		error : "Invalid email or password"
+	}
+
+6.	LOGIN INCORRECT PASSWORD
+
+http --session pc POST :8080/rest/login email="user@host" password="kek"
+
+EXPECTED:
+	Code:		401
+	Location:	/rest/recovery
+	{
+		error : "Invalid email or password"
+	}
+
+
+7.	LOGIN CORRECT
+
+http --session pc POST :8080/rest/login email="user@host" password="123456"
+
+EXPECTED:
+	Code:		200
+	Location:	/rest/user
+
+8.	GET USER DATA
+
+http --session pc GET :8080/rest/user
+
+EXPECTED:
+	Code:		200
+	{
+		email : "user@host",
+		subscription : {
+			type : "default",
+			starts : ...,
+			expires : ...
+		},
+		children : [],
+		policies : []
+	}
+
+9.	DELETE USER
+
+http --session pc POST :8080/rest/user/delete
+
+	Code:		200
+
+10.	GET USER DATA LOGGED OUT
+
+http --session pc GET :8080/rest/user
+
+EXPECTED:
+	Code:		401
+	Location:	/rest/login
+	{
+		error : "Log in"
+	}
+
+11.	LOGIN DELETED USER
+
+http --session pc POST :8080/rest/login email="user@host" password="kek"
+
+EXPECTED:
+        Code:	401
+        Location:	/rest/recovery
+	{
+		error : "Invalid email or password"
+	}
