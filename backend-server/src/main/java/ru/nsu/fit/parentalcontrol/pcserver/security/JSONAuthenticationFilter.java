@@ -3,25 +3,23 @@ package ru.nsu.fit.parentalcontrol.pcserver.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
-import ru.nsu.fit.parentalcontrol.pcserver.security.model.Auth;
+import ru.nsu.fit.parentalcontrol.pcserver.model.User;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
-import java.io.IOException;
 
 @Component
 public class JSONAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private static final Logger LOG = Logger.getRootLogger();
 
-  private Auth auth;
+  private User user;
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request,
@@ -37,7 +35,7 @@ public class JSONAuthenticationFilter extends UsernamePasswordAuthenticationFilt
       }
 
       final ObjectMapper mapper = new ObjectMapper();
-      auth = mapper.readValue(sb.toString(), Auth.class);
+      user = mapper.readValue(sb.toString(), User.class);
     } catch (Exception e) {
       LOG.warn("", e);
     }
@@ -47,15 +45,15 @@ public class JSONAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 
   @Override
   protected String obtainPassword(HttpServletRequest request) {
-    if (auth != null)
-      return auth.getPassword();
+    if (user != null)
+      return user.getPassword();
     return super.obtainPassword(request);
   }
 
   @Override
   protected String obtainUsername(HttpServletRequest request) {
-    if (auth != null)
-      return auth.getEmail();
+    if (user != null)
+      return user.getEmail();
     return super.obtainUsername(request);
   }
 

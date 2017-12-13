@@ -104,8 +104,7 @@ public class SecurityServiceImplTest {
   @Test
   public void loggedInTest() {
     final UsernamePasswordAuthenticationToken token =
-        new UsernamePasswordAuthenticationToken(email, "", authorities);
-    token.setDetails(new User(email, "", authorities));
+        new UsernamePasswordAuthenticationToken(new User(email, "", authorities), "", authorities);
 
     when(securityContext.getAuthentication())
         .thenReturn(token);

@@ -10,17 +10,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.nsu.fit.parentalcontrol.pcserver.security.model.Admin;
-import ru.nsu.fit.parentalcontrol.pcserver.security.model.Auth;
-import ru.nsu.fit.parentalcontrol.pcserver.security.repository.AdminRepository;
-import ru.nsu.fit.parentalcontrol.pcserver.security.repository.AuthRepository;
+import ru.nsu.fit.parentalcontrol.pcserver.model.Admin;
+import ru.nsu.fit.parentalcontrol.pcserver.model.User;
+import ru.nsu.fit.parentalcontrol.pcserver.repository.AdminRepository;
+import ru.nsu.fit.parentalcontrol.pcserver.repository.UserRepository;
 
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -28,7 +27,7 @@ import static org.mockito.Mockito.when;
 public class UserDetailServiceImplTest {
 
   @Mock
-  private AuthRepository authRepository;
+  private UserRepository userRepository;
 
   @Mock
   private AdminRepository adminRepository;
@@ -45,21 +44,21 @@ public class UserDetailServiceImplTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
 
-    final Auth userAuth = new Auth(userEmail, "");
-    final Auth adminAuth = new Auth(adminEmail, "");
+    final User user = new User(userEmail, "");
+    final User adminUser = new User(adminEmail, "");
 
-    final Admin admin = new Admin(adminEmail);
+    final Admin admin = new Admin(adminUser);
 
-    when(authRepository.findById(eq(userEmail)))
-        .thenReturn(Optional.of(userAuth));
-    when(authRepository.findById(eq(adminEmail)))
-        .thenReturn(Optional.of(adminAuth));
-    when(authRepository.findById(argThat(s -> !userEmail.equals(s) && !adminEmail.equals(s))))
+    when(userRepository.findByEmail(userEmail))
+        .thenReturn(Optional.of(user));
+    when(userRepository.findByEmail(adminEmail))
+        .thenReturn(Optional.of(adminUser));
+    when(userRepository.findByEmail(argThat(s -> s != userEmail && s != adminEmail)))
         .thenReturn(Optional.empty());
 
-    when(adminRepository.findById(adminEmail))
+    when(adminRepository.findByUser(adminUser))
         .thenReturn(Optional.of(admin));
-    when(adminRepository.findById(argThat(s -> !adminEmail.equals(s))))
+    when(adminRepository.findByUser(argThat(u -> u != adminUser)))
         .thenReturn(Optional.empty());
   }
 

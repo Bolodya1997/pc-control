@@ -13,8 +13,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.nsu.fit.parentalcontrol.pcserver.security.model.Auth;
-import ru.nsu.fit.parentalcontrol.pcserver.security.repository.AuthRepository;
+import ru.nsu.fit.parentalcontrol.pcserver.model.User;
+import ru.nsu.fit.parentalcontrol.pcserver.repository.UserRepository;
 import ru.nsu.fit.parentalcontrol.pcserver.security.service.SecurityService;
 
 import java.util.Optional;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RegistrationControllerTest {
 
   @Mock
-  private AuthRepository authRepository;
+  private UserRepository userRepository;
 
   @Mock
   private SecurityService securityService;
@@ -47,8 +47,8 @@ public class RegistrationControllerTest {
 
   final String newEmail = "new@host";
 
-  final Auth registered = new Auth(email, password);
-  final Auth notRegistered = new Auth(newEmail, password);
+  final User registered = new User(email, password);
+  final User notRegistered = new User(newEmail, password);
 
   @Before
   public void setup() {
@@ -58,11 +58,11 @@ public class RegistrationControllerTest {
         .setControllerAdvice(new ControllerExceptionHandler())
         .build();
 
-    final Auth auth = new Auth(email, password);
+    final User user = new User(email, password);
 
-    when(authRepository.findById(eq(email)))
-        .thenReturn(Optional.of(auth));
-    when(authRepository.findById(argThat(s -> !email.equals(s))))
+    when(userRepository.findByEmail(eq(email)))
+        .thenReturn(Optional.of(user));
+    when(userRepository.findByEmail(argThat(s -> !email.equals(s))))
         .thenReturn(Optional.empty());
 
     doNothing().when(securityService).autoLogin(any(), any());
@@ -76,7 +76,7 @@ public class RegistrationControllerTest {
           .content(mapper.writeValueAsBytes(notRegistered))
           .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(header().string(HttpHeaders.LOCATION, "/user?email=" + newEmail));
+        .andExpect(header().string(HttpHeaders.LOCATION, "/rest/user"));
 
     verify(securityService, times(1)).autoLogin(eq(newEmail), eq(password));
   }

@@ -1,4 +1,0 @@
-CREATE TABLE log_type (
-	type_id		INT		PRIMARY KEY	AUTO INCREMENT,
-	type_name	VARCHAR(45)	UNIQUE		NOT NULL
-);
