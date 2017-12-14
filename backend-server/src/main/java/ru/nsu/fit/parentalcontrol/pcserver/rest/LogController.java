@@ -45,21 +45,21 @@ public class LogController {
   public void post(@RequestBody Map<String, String>[] jsons) throws ParseException {
     final User user = findLoggedInUser();
 
-    for (Map<String, String> json : jsons) {
-      final int childId = Integer.decode(json.get("childId"));
+    for (int i = 0; i < jsons.length; i++) {
+      final int childId = Integer.decode(jsons[i].get("childId"));
       final Optional<Child> childOptional = childRepository.findById(childId);
       if (!childOptional.isPresent() || !childOptional.get().getUser().equals(user))
-        continue; //  TODO: create exception
+        throw new RestException(HttpStatus.BAD_REQUEST, "Incorrect child in " + (i + 1));
 
-      final Optional<LogType> logTypeOptional = logTypeRepository.findByName(json.get("type"));
+      final Optional<LogType> logTypeOptional = logTypeRepository.findByName(jsons[i].get("type"));
       if (!logTypeOptional.isPresent())
-        continue; //  TODO: create exception
+        throw new RestException(HttpStatus.BAD_REQUEST, "Incorrect type in " + (i + 1));
 
       final Log log = new Log();
       log.setChild(childOptional.get());
-      log.setTime(DateFormatter.stringToData(json.get("time")));
+      log.setTime(DateFormatter.stringToData(jsons[i].get("time")));
       log.setType(logTypeOptional.get());
-      log.setInfo(json.get("data"));
+      log.setInfo(jsons[i].get("data"));
       logRepository.save(log);
     }
   }
@@ -78,7 +78,7 @@ public class LogController {
                                   : null;
 
     return StreamSupport.stream(logRepository.findAll().spliterator(), true)
-        .filter(log -> log.getChild().getUser().equals(user))
+        .filter(log -> log.getUser().equals(user))
         .filter(log -> id == null || log.getId().equals(id))
         .filter(log -> childId == null || log.getChild().getId().equals(id))
         .filter(log -> type == null || log.getType().getName().equals(type))
@@ -95,11 +95,11 @@ public class LogController {
 
   @DeleteMapping
   @Transactional
-  private void delete(@RequestParam(name = "id") int id) {
+  public void delete(@RequestParam(name = "id") int id) {
     final User user = findLoggedInUser();
 
     final Optional<Log> logOptional = logRepository.findById(id);
-    if (!logOptional.isPresent() || logOptional.get().getChild().getUser().equals(user))
+    if (!logOptional.isPresent() || logOptional.get().getUser().equals(user))
       throw new RestException(HttpStatus.NOT_FOUND, "Log with id=" + id + " not found");
 
     logRepository.delete(logOptional.get());

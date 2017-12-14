@@ -14,10 +14,11 @@ public class Log {
   private Integer id;
 
   @ManyToOne(optional = false)
-  @JoinColumns({
-      @JoinColumn(name = "USER_ID", nullable = false),
-      @JoinColumn(name = "CHILD_ID", nullable = false)
-  })
+  @JoinColumn(name = "USER_ID", nullable = false)
+  private User user;
+
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "CHILD_ID", nullable = false)
   private Child child;
 
   @Temporal(TemporalType.TIMESTAMP)
@@ -28,11 +29,19 @@ public class Log {
   private String info;
 
   @ManyToOne(optional = false)
-  @JoinColumn(name = "LOG_ID", nullable = false)
+  @JoinColumn(name = "TYPE_ID", nullable = false)
   private LogType type;
 
   public Integer getId() {
     return id;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(@NotNull User user) {
+    this.user = user;
   }
 
   public Child getChild() {
