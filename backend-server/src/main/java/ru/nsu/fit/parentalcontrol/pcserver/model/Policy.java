@@ -62,6 +62,10 @@ public class Policy {
     return lastModified;
   }
 
+  public void setLastModified(@NotNull Date lastModified) {
+    this.lastModified = lastModified;
+  }
+
   @NotNull
   public String getSites() {
     return sites;
