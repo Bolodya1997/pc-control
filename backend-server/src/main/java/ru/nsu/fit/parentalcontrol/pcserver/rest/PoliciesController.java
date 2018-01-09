@@ -43,13 +43,15 @@ public class PoliciesController {
     policy.setUser(user);
     policy = policyRepository.save(policy);
 
+    final Map body = Map.of("id", policy.getId());
+
     final HttpHeaders headers = new HttpHeaders();
     headers.setLocation(new URI("/rest/user/policies/" + policy.getId()));
 
-    return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    return new ResponseEntity<>(body, headers, HttpStatus.CREATED);
   }
 
-  @GetMapping(path = "{id}")
+  @GetMapping(path = "/{id}")
   @Transactional(readOnly = true)
   public ResponseEntity<?> get(@PathVariable Integer id) {
     final Policy policy = findPolicyByIdSafe(id);
@@ -66,7 +68,7 @@ public class PoliciesController {
     return new ResponseEntity<>(content, headers, HttpStatus.OK);
   }
 
-  @DeleteMapping(path = "{id}")
+  @DeleteMapping(path = "/{id}")
   @Transactional
   public void delete(@PathVariable Integer id) {
     final Policy policy = findPolicyByIdSafe(id);
@@ -74,7 +76,7 @@ public class PoliciesController {
     policyRepository.delete(policy);
   }
 
-  @GetMapping(path = "{id}/sites")
+  @GetMapping(path = "/{id}/sites")
   public ResponseEntity<?> getSites(@PathVariable Integer id) {
     final Policy policy = findPolicyByIdSafe(id);
 
@@ -88,7 +90,7 @@ public class PoliciesController {
     return new ResponseEntity<>(content, headers, HttpStatus.OK);
   }
 
-  @PutMapping(path = "{id}/sites")
+  @PutMapping(path = "/{id}/sites")
   @Transactional
   public ResponseEntity<?> putSites(@PathVariable Integer id,
                                     @RequestBody Map<String, String> json) throws ParseException {
@@ -103,7 +105,7 @@ public class PoliciesController {
     return new ResponseEntity<>(headers, HttpStatus.OK);
   }
 
-  @GetMapping(path = "{id}/applications")
+  @GetMapping(path = "/{id}/applications")
   public ResponseEntity<?> getApplications(@PathVariable Integer id) {
     final Policy policy = findPolicyByIdSafe(id);
 
@@ -117,7 +119,7 @@ public class PoliciesController {
     return new ResponseEntity<>(content, headers, HttpStatus.OK);
   }
 
-  @PutMapping(path = "{id}/applications")
+  @PutMapping(path = "/{id}/applications")
   @Transactional
   public ResponseEntity<?> putApplications(@PathVariable Integer id,
                                            @RequestBody Map<String, String> json)
@@ -133,7 +135,7 @@ public class PoliciesController {
     return new ResponseEntity<>(headers, HttpStatus.OK);
   }
 
-  @GetMapping(path = "{id}/schedule")
+  @GetMapping(path = "/{id}/schedule")
   public ResponseEntity<?> getSchedule(@PathVariable Integer id) {
     final Policy policy = findPolicyByIdSafe(id);
 
@@ -147,7 +149,7 @@ public class PoliciesController {
     return new ResponseEntity<>(content, headers, HttpStatus.OK);
   }
 
-  @PutMapping(path = "{id}/schedule")
+  @PutMapping(path = "/{id}/schedule")
   @Transactional
   public ResponseEntity<?> putSchedule(@PathVariable Integer id,
                                        @RequestBody Map<String, String> json)

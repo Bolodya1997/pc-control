@@ -122,6 +122,9 @@ CREATE TABLE log (
 INSERT INTO subscription_type (type_id, type_name, description)
 	VALUES (0, 'default', '{}');
 
+INSERT INTO log_type (type_id, type_name)
+	VALUES (0, "apps_log"), (1, "system_log");
+
 ##################################################
 ###		CREATE USER
 ##################################################
