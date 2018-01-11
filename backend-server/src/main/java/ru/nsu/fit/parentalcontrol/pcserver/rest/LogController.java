@@ -56,6 +56,7 @@ public class LogController {
         throw new RestException(HttpStatus.BAD_REQUEST, "Incorrect type in " + (i + 1));
 
       final Log log = new Log();
+      log.setUser(user);
       log.setChild(childOptional.get());
       log.setTime(DateFormatter.stringToData(jsons[i].get("time")));
       log.setType(logTypeOptional.get());
